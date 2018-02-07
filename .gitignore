@@ -103,5 +103,5 @@ ENV/
 #local configuration and grades
 /student-work
 /grades
-/authorization-token
+/access-token
 /roster
