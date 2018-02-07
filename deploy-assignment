@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+from githubpy.github import GitHub
+from pathlib import Path
+from sys import argv, exit
+from os import chdir,system,mkdir,path
+
+#get the authorization token and create the github connection
+access_token = Path("access-token").read_text()
+gh = GitHub(access_token=access_token)
+owner = gh.user.get().login
+
+
+#read the roster
+file = open("roster", "r")
+roster = [line for line in file]
+file.close()
+
+#get the assignment name, create the directory, and change into it
+name = argv[1]
+if not path.isdir('student-work'):
+  mkdir('student-work')
+chdir('student-work')
+if not path.isdir(name):
+  mkdir(name)
+else:
+  print("ERROR!  This assignment is already deployed!")
+  exit(1)
+chdir(name)
+
+for student in roster:
+  #generate the student project's name
+  sname = "%s-%s"%(name, student)
+
+  #TODO: Error checking here would be nice!
+  #clone the starter repo into this directory
+  system("git clone git@github.com:%s/%s %s"%(owner, name, sname))
+
+  #create a private repo for the student 
+  r=gh.user.repos.post(name=sname, private=True)
+
+  #push the starter repo
+  chdir(sname)
+  system("git remote set-url origin git@github.com:%s/%s.git"%(owner, sname))
+  system("git push -u origin master")
+  chdir("..")
+
+  #add the student as a collaborator
+  r=gh.repos(owner)(sname)('collaborators')(student).put()
+  
+
+
