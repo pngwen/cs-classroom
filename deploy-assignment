@@ -12,7 +12,7 @@ owner = gh.user.get().login
 
 #read the roster
 file = open("roster", "r")
-roster = [line for line in file]
+roster = [line.strip() for line in file]
 file.close()
 
 #get the assignment name, create the directory, and change into it
