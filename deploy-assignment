@@ -8,6 +8,7 @@ from os import chdir,system,mkdir,path
 access_token = Path("access-token").read_text()
 gh = GitHub(access_token=access_token)
 owner = gh.user.get().login
+orgname = Path("org-name").read_text()
 
 
 #read the roster
@@ -33,19 +34,19 @@ for student in roster:
 
   #TODO: Error checking here would be nice!
   #clone the starter repo into this directory
-  system("git clone git@github.com:%s/%s %s"%(owner, name, sname))
+  system("git clone git@github.com:%s/%s %s"%(orgname, name, sname))
 
   #create a private repo for the student 
-  r=gh.user.repos.post(name=sname, private=True)
+  r=gh.orgs(orgname).repos.post(name=sname, private=True)
 
   #push the starter repo
   chdir(sname)
-  system("git remote set-url origin git@github.com:%s/%s.git"%(owner, sname))
+  system("git remote set-url origin git@github.com:%s/%s.git"%(orgname, sname))
   system("git push -u origin master")
   chdir("..")
 
   #add the student as a collaborator
-  r=gh.repos(owner)(sname)('collaborators')(student).put()
+  r=gh.repos(orgname)(sname)('collaborators')(student).put()
   
 
 
