@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+import os
+import gradebook
+import sys
+
+#get the path to the gradebook directory
+class_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
+gbpath = class_dir + "/grades/"
+student_work_path = class_dir + "/student-work/"
+
+#Load the template gradebook
+tgb = gradebook.load_gradebook(gbpath+"template")
+
+#Get the section that we want to grade
+sections = [k for k in tgb]
+print("\n\nCourse Section")
+for i in range(len(sections)):
+  print("%2d.) %s"%(i+1, sections[i]))
+section_index = int(input("Your choice? ")) - 1
+section = sections[section_index]
+
+#Get the assignment name
+assignment = input("Assignment Name> ")
+
+#Get the list of directories
+dirs = os.listdir(student_work_path)
+print("\n\nProject Directory")
+for i in range(len(dirs)):
+  print("%2d.) %s"%(i+1, dirs[i]))
+dir_index = int(input("Your Choice? ")) - 1
+project_name = dirs[dir_index]
+project_path = student_work_path + project_name + "/"
+
+#load the roster
+file = open(class_dir +"/roster")
+roster = [line.strip() for line in file]
+file.close()
+
+#commence to grading!
+for student in roster:
+  sgbfile = gbpath+student
+  if os.path.isfile(sgbfile):
+    sgb = gradebook.load_gradebook(sgbfile)
+  else:
+    sgb = gradebook.load_gradebook(gbpath+"template")
+  sdir = project_path + "/%s-%s"%(project_name, student)
+  if not os.path.isdir(sdir):
+    gradebook.add_assignment(sgb, section, assignment, 0, ['Nothing submitted',])
+  elif assignment not in sgb[section]['assignments']:
+    os.chdir(sdir)
+    os.system("bash")
+    gradebook.grade_editor(sgb, section, assignment)
+  else:
+    print("Already graded %s for %s.  Skipping."%(assignment, student))
+    
+  #write the gradebook to disk
+  gradebook.write_gradebook(sgbfile, sgb)
+
