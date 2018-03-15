@@ -7,10 +7,13 @@ def add_section(gb, section, weight):
   gb[section] = { 'assignments':{}, 'weight': weight }
 
 
-def add_assignment(gb, section, assignment, grade, notes=[]):
+def add_assignment(gb, section, assignment, grade, notes=None):
   '''
   Add an assignment to the gradebook
   '''
+  if notes is None:
+    notes=[]
+  
   if section not in gb:
     raise KeyError("Gradebook section %s does not exist"%(section,))
   gb[section]['assignments'][assignment] = { 'notes':notes, 'grade': grade}
@@ -39,7 +42,6 @@ def load_gradebook(fname):
     if m is not None:
       assignment=m.group(1).strip()
       add_assignment(gb, section, assignment, int(m.group(2)))
-
       continue
 
     #check for a note
@@ -47,7 +49,7 @@ def load_gradebook(fname):
     if m is not None:
       gb[section]['assignments'][assignment]['notes'].append(m.group(1).strip())
       continue
-
+  file.close()
   return gb
 
 
