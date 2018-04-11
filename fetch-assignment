@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+from classroom import Classroom
+from sys import argv
+
+#create the classroom
+c = Classroom()
+
+#fetch all the projects
+for student in c.roster:
+  if len(argv) == 2:
+    c.fetch_student_project(argv[1], student)
+  else:
+    if(argv[2] == '%student%'):
+      c.fetch_student_project(argv[1], student, argv[2])
+    else:
+      c.fetch_student_project(argv[1], student, student)

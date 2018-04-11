@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import gradebook
+
+file = open("roster")
+roster = [line.strip() for line in file]
+file.close()
+
+average={}
+for student in roster:
+  gb = gradebook.load_gradebook("grades/"+student)
+  for section in gb:
+    average[section]={'count': len(gb[section]['assignments']), 'total': 0, 'weight': gb[section]['weight']}
+    for assignment in gb[section]['assignments']:
+      average[section]['total'] += gb[section]['assignments'][assignment]['grade']
+
+  totalDiv = 0
+  total = 0
+  for section, avg in average.items():
+    if avg['count'] > 0:
+      totalDiv += avg['weight']
+      total += (avg['total'] * avg['weight']) / avg['count']
+  print("%s\t %d"%(student, total/totalDiv))
+    
+  
