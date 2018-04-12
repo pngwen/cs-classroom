@@ -24,12 +24,14 @@ assignment = input("Assignment Name> ")
 
 #Get the list of directories
 dirs = os.listdir(student_work_path)
+dirs.append('Manual')
 print("\n\nProject Directory")
 for i in range(len(dirs)):
   print("%2d.) %s"%(i+1, dirs[i]))
 dir_index = int(input("Your Choice? ")) - 1
 project_name = dirs[dir_index]
 project_path = student_work_path + project_name + "/"
+manual = dir_index == len(dirs)-1
 
 #load the roster
 file = open(class_dir +"/roster")
@@ -44,7 +46,11 @@ for student in roster:
   else:
     sgb = gradebook.load_gradebook(gbpath+"template")
   sdir = project_path + "/%s-%s"%(project_name, student)
-  if not os.path.isdir(sdir):
+  if manual:
+    #handle manual grading
+    print("Manual Grade for %s on %s"%(assignment, student))
+    gradebook.grade_editor(sgb, section, assignment)
+  elif not os.path.isdir(sdir):
     gradebook.add_assignment(sgb, section, assignment, 0, ['Nothing submitted',])
   elif assignment not in sgb[section]['assignments']:
     os.chdir(sdir)

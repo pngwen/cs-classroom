@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+import gradebook
+
+file = open("roster")
+roster = [line.strip() for line in file]
+file.close()
+
+def sep(f):
+    f.write("=================================================================\n")
+
+average={}
+for student in roster:
+  gb = gradebook.load_gradebook("grades/"+student)
+  f = open("reports/"+student, "w")
+  f.write(student)
+  f.write("\n\n")
+
+  for section in gb:
+    f.write(section+"\n")
+    sep(f)
+    average[section]={'count': len(gb[section]['assignments']), 'total': 0, 'weight': gb[section]['weight']}
+    for assignment in gb[section]['assignments']:
+      average[section]['total'] += gb[section]['assignments'][assignment]['grade']
+      f.write("%-60s%5.1f\n"%(assignment, gb[section]['assignments'][assignment]['grade']))
+      for note in gb[section]['assignments'][assignment]['notes']:
+          f.write("  %s\n"%(note,))
+    sep(f)
+    f.write("%s Average: %f\n\n\n" % (section, average[section]['total']/average[section]['count']))
+      
+
+  totalDiv = 0
+  total = 0
+  for section, avg in average.items():
+    if avg['count'] > 0:
+      totalDiv += avg['weight']
+      total += (avg['total'] * avg['weight']) / avg['count']
+  f.write("Final Average: %d\n"%(total/totalDiv,))
+    
+  
