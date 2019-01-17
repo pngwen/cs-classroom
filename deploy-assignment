@@ -5,10 +5,10 @@ from sys import argv, exit
 from os import chdir,system,mkdir,path
 
 #get the authorization token and create the github connection
-access_token = Path("access-token").read_text()
+access_token = Path("access-token").read_text().strip()
 gh = GitHub(access_token=access_token)
 owner = gh.user.get().login
-orgname = Path("org-name").read_text()
+orgname = Path("org-name").read_text().strip()
 
 
 #read the roster

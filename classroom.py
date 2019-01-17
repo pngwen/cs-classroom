@@ -10,10 +10,10 @@ class Classroom:
     '''
     
     #initilize the 
-    self.access_token = Path("access-token").read_text()
+    self.access_token = Path("access-token").read_text().strip()
     self.gh = GitHub(access_token=self.access_token)
     self.owner = self.gh.user.get().login
-    self.orgname = Path("org-name").read_text()
+    self.orgname = Path("org-name").read_text().strip()
 
     #read the roster
     file = open("roster", "r")
