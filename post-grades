@@ -36,8 +36,7 @@ for student in roster:
 
     #create the remote repository
     r=gh.orgs(orgname).repos.post(name=sname, private=True)
-    system("git remote set-url origin git@github.com:%s/%s.git"%(orgname, sname))
-    system("git push -u origin master")
+    system("git remote add origin git@github.com:%s/%s.git"%(orgname, sname))
 
     #add the student as a collaborator
     r=gh.repos(orgname)(sname)('collaborators')(student).put()
@@ -48,7 +47,7 @@ for student in roster:
   system("cp ../../reports/%s CSC112-Grade.txt"%(student,))
   system("git add -A")
   system("git commit -a -m 'updated graded report'")
-  system("git push")
+  system("git push -u origin master")
 
   #create a private repo for the student 
   chdir("..")
