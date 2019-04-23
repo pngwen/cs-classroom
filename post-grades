@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+from githubpy.github import GitHub
+from pathlib import Path
+from sys import argv, exit
+from os import chdir,system,mkdir,path
+
+#get the authorization token and create the github connection
+access_token = Path("access-token").read_text().strip()
+gh = GitHub(access_token=access_token)
+owner = gh.user.get().login
+orgname = Path("org-name").read_text().strip()
+
+#run the grade reports
+system("./grade-report")
+
+#read the roster
+file = open("roster", "r")
+roster = [line.strip() for line in file]
+file.close()
+
+#get the assignment name, create the directory, and change into it
+if not path.isdir('grade-posts'):
+  mkdir('grade-posts')
+chdir('grade-posts')
+
+
+for student in roster:
+  #TODO: Make this configurable
+  sname = "CSC112-Grade-%s"%(student,)
+
+  #create the repo, if it does not already exist
+  if not path.isdir(sname) :
+    mkdir(sname)
+    chdir(sname)
+    system("git init")
+
+    #create the remote repository
+    r=gh.orgs(orgname).repos.post(name=sname, private=True)
+    system("git remote set-url origin git@github.com:%s/%s.git"%(orgname, sname))
+    system("git push -u origin master")
+
+    #add the student as a collaborator
+    r=gh.repos(orgname)(sname)('collaborators')(student).put()
+  else:
+    chdir(sname)
+
+  # copy the grade report and commit everything
+  system("cp ../../reports/%s CSC112-Grade.txt"%(student,))
+  system("git add -A")
+  system("git commit -a -m 'updated graded report'")
+  system("git push")
+
+  #create a private repo for the student 
+  chdir("..")
+

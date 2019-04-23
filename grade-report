@@ -25,7 +25,8 @@ for student in roster:
       for note in gb[section]['assignments'][assignment]['notes']:
           f.write("  %s\n"%(note,))
     sep(f)
-    f.write("%s Average: %f\n\n\n" % (section, average[section]['total']/average[section]['count']))
+    if average[section]['count'] > 0:
+      f.write("%s Average: %.02f\n\n\n" % (section, average[section]['total']/average[section]['count']))
       
 
   totalDiv = 0
@@ -35,5 +36,3 @@ for student in roster:
       totalDiv += avg['weight']
       total += (avg['total'] * avg['weight']) / avg['count']
   f.write("Final Average: %d\n"%(total/totalDiv,))
-    
-  
