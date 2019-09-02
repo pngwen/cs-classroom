@@ -1,0 +1,35 @@
+#!/bin/sh
+
+#check number of arguments
+if [ "$#" -ne 1 ]; then
+  echo 
+  echo "USAGE: $0 assignment-directory"
+  echo 
+  exit 1
+fi
+
+#go to the working directory
+cd `dirname $0`
+gbdir=`pwd`
+
+#check out whether the folder exists
+student_dir="$gbdir/student-work/$1"
+if [ ! -d "$student_dir" ]; then
+  echo
+  echo "Could not open $student_dir"
+  echo
+  exit 2
+fi
+
+#run the grade report
+./grade-report
+date=`date`
+for student in `cat roster`
+do
+    cd "$student_dir/$1-$student"
+    cp "$gbdir/reports/$student" ./GRADE.TXT
+    git add ./GRADE.TXT
+    git commit -m "Grade Report as of $date" ./GRADE.TXT
+    git push
+    cd $gbdir
+done
