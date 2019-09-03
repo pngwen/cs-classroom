@@ -28,6 +28,7 @@ for student in `cat roster`
 do
     cd "$student_dir/$1-$student"
     cp "$gbdir/reports/$student" ./GRADE.TXT
+    git pull
     git add ./GRADE.TXT
     git commit -m "Grade Report as of $date" ./GRADE.TXT
     git push
